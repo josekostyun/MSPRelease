@@ -30,27 +30,22 @@ int main(void)
 
     while(1)
     {
-        if(new_sentence)
+        if (new_sentence)
         {
             new_sentence = 0;
 
-            // Check if it's a GGA sentence
-            if(strstr(gps_buffer, "GGA"))
+            if (strstr(gps_buffer, "RMC"))
             {
-                parse_GPGGA(gps_buffer);
+                parse_GPRMC(gps_buffer);
 
-                // Send GPS data to Bluetooth
-                Bluetooth_sendString("GPS: ");
-                Bluetooth_sendString(gps_buffer);
-                Bluetooth_sendString("\r\n");
-
-                // Send parsed latitude and fix status
-                if(fix_status != '0')
+                if (fix_status == 'A')
                 {
-                    Bluetooth_sendString("LAT: ");
+                    Bluetooth_sendString("UTC: ");
+                    Bluetooth_sendString(utc_time);
+                    Bluetooth_sendString(" LAT: ");
                     Bluetooth_sendString(latitude);
-                    Bluetooth_sendString(" FIX: ");
-                    Bluetooth_sendChar(fix_status);
+                    Bluetooth_sendString(" LON: ");
+                    Bluetooth_sendString(longitude);
                     Bluetooth_sendString("\r\n");
                 }
                 else
