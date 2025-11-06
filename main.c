@@ -24,7 +24,9 @@ int main(void)
     //Testing Only
     while (!ble_ready);
 
+    GPS_queryConfig(); //GPS Configue test
     Bluetooth_sendString("GPS Ready\r\n");
+
 
     while(1)
     {

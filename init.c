@@ -100,8 +100,6 @@ void Configure_MTK3339(void)
     UCA0MCTLW = UCOS16 | UCBRF_5 | 0x5500;
     UCA0CTLW0 &= ~UCSWRST;          // Release for operation
     UCA0IE |= UCRXIE;               // Re-enable RX interrupt
-
-    GPS_queryConfig(); //GPS Configue test
 }
 
 
