@@ -6,6 +6,7 @@
 extern char gps_buffer[GPS_BUFFER_SIZE];
 extern volatile int gps_idx;
 extern volatile char new_sentence;
+extern volatile unsigned char ble_ready;
 
 void Initialize_Clock(void);
 void Initialize_GPS_UART(void);

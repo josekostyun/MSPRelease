@@ -6,7 +6,8 @@
 // Parsed GPS fields (remain here)
 char latitude[12] = "0000000000";
 char fix_status = '0';
-//volatile uint8_t ble_ready = 0; //testing only
+
+volatile uint8_t ble_ready = 0; //testing only
 
 int main(void)
 {
