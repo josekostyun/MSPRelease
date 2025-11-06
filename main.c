@@ -1,5 +1,6 @@
 #include <msp430.h>
 #include <string.h>
+#include <stdint.h>
 #include "init.h"
 #include "parser.h"
 
@@ -17,14 +18,14 @@ int main(void)
     Initialize_Clock();
     Initialize_GPS_UART();
     Initialize_Bluetooth_UART();
-    Configure_MTK3339();
+    //Configure_MTK3339();
 
     __enable_interrupt();
 
     //Testing Only
-    while (!ble_ready);
+    //while (!ble_ready);
 
-    GPS_queryConfig(); //GPS Configue test
+    //GPS_queryConfig(); //GPS Configue test
     Bluetooth_sendString("GPS Ready\r\n");
 
 
