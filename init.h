@@ -3,15 +3,19 @@
 
 #define GPS_BUFFER_SIZE 100
 
+// Global variables
 extern char gps_buffer[GPS_BUFFER_SIZE];
 extern volatile int gps_idx;
 extern volatile char new_sentence;
 extern volatile unsigned char ble_ready;
 
+// Function declarations
 void Initialize_Clock(void);
 void Initialize_GPS_UART(void);
 void Initialize_Bluetooth_UART(void);
 void Configure_MTK3339(void);
+void GPS_sendCommand(const char *cmd);
+void GPS_queryConfig(void);
 void Bluetooth_sendChar(char c);
 void Bluetooth_sendString(const char* str);
 
