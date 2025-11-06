@@ -3,9 +3,18 @@
 
 extern volatile unsigned char ble_ready; //testing only
 
+// GPS buffer variables
 char gps_buffer[GPS_BUFFER_SIZE];
 volatile int gps_idx = 0;
 volatile char new_sentence = 0;
+
+// Bluetooth ready flag
+volatile unsigned char ble_ready = 0;
+
+// SPI buffer variables
+volatile char ph_buffer[32];
+volatile unsigned char ph_idx = 0;
+volatile unsigned char ph_ready = 0;
 
 // Initialize 8MHz clock
 void Initialize_Clock(void)
@@ -64,6 +73,32 @@ void GPS_sendCommand(const char *cmd)
     }
 }
 
+void Initialize_SPI(void)
+{
+    // Configure SPI pins for UCB0 (Primary Function Mode)
+    P1SEL0 |= BIT0 | BIT1 | BIT2 | BIT3;
+    P1SEL1 &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+
+    /*
+       P1.0 = STE   (Chip Select from Pi)
+       P1.1 = CLK
+       P1.2 = SIMO (Pi → MSP RX)
+       P1.3 = SOMI (MSP → Pi TX)
+    */
+
+    UCB0CTLW0 = UCSWRST;        // hold in reset
+    UCB0CTLW0 |= UCSYNC;        // synchronous (SPI)
+    UCB0CTLW0 |= UCMODE_1;      // 4-pin SPI Slave w/ STE
+    UCB0CTLW0 &= ~UCMST;        // Slave mode
+    UCB0CTLW0 |= UCMSB;         // MSB first
+    UCB0CTLW0 &= ~UCCKPH;       // Clock phase (Pi mode 0)
+    UCB0CTLW0 &= ~UCCKPL;
+
+    UCB0CTLW0 &= ~UCSWRST;      // release reset
+    UCB0IE |= UCRXIE;           // enable RX interrupt
+}
+
+
 void GPS_queryConfig(void)
 {
     // Query update rate (should respond $PMTK220,250*xx)
@@ -101,8 +136,6 @@ void Configure_MTK3339(void)
     UCA0CTLW0 &= ~UCSWRST;          // Release for operation
     UCA0IE |= UCRXIE;               // Re-enable RX interrupt
 }
-
-
 
 void Bluetooth_sendChar(char c)
 {
@@ -172,3 +205,29 @@ __interrupt void USCI_A1_ISR(void)
         default: break;
     }
 }
+
+#pragma vector = EUSCI_B0_VECTOR
+__interrupt void EUSCI_B0_ISR(void)
+{
+    switch(__even_in_range(UCB0IV, USCI_SPI_UCTXIFG))
+    {
+        case USCI_SPI_UCRXIFG:
+        {
+            char c = UCB0RXBUF;
+
+            if (c == '$') {
+                ph_idx = 0;
+                ph_buffer[ph_idx++] = c;
+            }
+            else if (c == '#') {
+                ph_buffer[ph_idx] = '\0';
+                ph_ready = 1;
+            }
+            else if (ph_idx < sizeof(ph_buffer)-1) {
+                ph_buffer[ph_idx++] = c;
+            }
+            break;
+        }
+    }
+}
+
