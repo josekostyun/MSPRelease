@@ -1,0 +1,36 @@
+# Ignore CCS build output directories
+Debug/
+Release/
+targetConfigs/
+
+# Ignore Eclipse/CCS workspace metadata
+*.launch
+*.settings/
+.metadata/
+*.project
+*.cproject
+
+# Ignore compiled object files
+*.obj
+*.o
+*.d
+*.map
+*.out
+
+# Ignore auto-generated linker files and dependency files
+*.mk
+subdir_vars.mk
+sources.mk
+makefile
+
+# Ignore logs and backup files
+*.log
+*.bak
+*.tmp
+
+# Ignore python virtual envs (if used)
+venv/
+
+# Ignore OS junk files
+.DS_Store
+Thumbs.db
