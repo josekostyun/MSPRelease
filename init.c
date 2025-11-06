@@ -172,4 +172,3 @@ __interrupt void USCI_A1_ISR(void)
         default: break;
     }
 }
-

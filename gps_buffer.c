@@ -18,7 +18,8 @@ void GPSBuffer_add(const char* time, const char* lat, const char* lon)
 void GPSBuffer_printAll(void)
 {
     Bluetooth_sendString("\r\n--- GPS History ---\r\n");
-    for (int i = 0; i < GPS_HISTORY_SIZE; i++) {
+    int i =0;
+    for (i = 0; i < GPS_HISTORY_SIZE; i++) {
         Bluetooth_sendString(gps_history[i].utc_time);
         Bluetooth_sendString(" | ");
         Bluetooth_sendString(gps_history[i].latitude);

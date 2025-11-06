@@ -1,13 +1,13 @@
 #include <msp430.h>
 #include <string.h>
+#include <stdint.h>
 #include "init.h"
 #include "parser.h"
+#include "gps_buffer.h"  // ← ADD THIS LINE
 
-// Parsed GPS fields (remain here)
-char latitude[12] = "0000000000";
-char fix_status = '0';
 
 volatile uint8_t ble_ready = 0; //testing only
+volatile uint8_t buffer_printed = 0; // flag to print buffer only once
 
 int main(void)
 {
@@ -24,7 +24,7 @@ int main(void)
     //Testing Only
     while (!ble_ready);
 
-    GPS_queryConfig(); //GPS Configue test
+    GPS_queryConfig(); //GPS Configure test
     Bluetooth_sendString("GPS Ready\r\n");
 
 
@@ -40,13 +40,14 @@ int main(void)
 
                 if (fix_status == 'A')
                 {
-                    Bluetooth_sendString("UTC: ");
-                    Bluetooth_sendString(utc_time);
-                    Bluetooth_sendString(" LAT: ");
-                    Bluetooth_sendString(latitude);
-                    Bluetooth_sendString(" LON: ");
-                    Bluetooth_sendString(longitude);
-                    Bluetooth_sendString("\r\n");
+                    // Print buffer after collecting 20 entries (5 seconds of data)
+                    if (gps_head == 20 && !buffer_printed)
+                    {
+                        buffer_printed = 1; // Set flag so it only prints once
+                        Bluetooth_sendString("\r\n=== First 5 Seconds of Data (20 entries) ===\r\n");
+                        GPSBuffer_printAll();
+                        Bluetooth_sendString("=== End of History ===\r\n\r\n");
+                    }
                 }
                 else
                 {

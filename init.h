@@ -12,6 +12,7 @@ void Initialize_Clock(void);
 void Initialize_GPS_UART(void);
 void Initialize_Bluetooth_UART(void);
 void Configure_MTK3339(void);
+void GPS_queryConfig(void);
 void Bluetooth_sendChar(char c);
 void Bluetooth_sendString(const char* str);
 
